@@ -71,7 +71,7 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
 
   $form['fieldset']['voornaam']['#type'] = 'textfield';
   $form['fieldset']['voornaam']['#title'] = 'Voornaam';
-  $form['fieldset']['voornaam']['#required'] = true;
+  $form['fieldset']['voornaam']['#required'] = false;
   $form['fieldset']['voornaam']['#default_value'] = $contact['voornaam'];
 
   $form['fieldset']['tussenvoegsel']['#type'] = 'textfield';
@@ -81,19 +81,19 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
 
   $form['fieldset']['achternaam']['#type'] = 'textfield';
   $form['fieldset']['achternaam']['#title'] = 'Achternaam';
-  $form['fieldset']['achternaam']['#required'] = true;
+  $form['fieldset']['achternaam']['#required'] = false;
   $form['fieldset']['achternaam']['#default_value'] = $contact['achternaam'];
 
-  $gender_options = CRM_Core_OptionGroup::values('gender');
+  $gender_options = array('' => ' - Selecteer - ') + CRM_Core_OptionGroup::values('gender');
   $form['fieldset']['geslacht']['#type'] = 'select';
   $form['fieldset']['geslacht']['#title'] = 'Geslacht';
-  $form['fieldset']['geslacht']['#required'] = true;
+  $form['fieldset']['geslacht']['#required'] = false;
   $form['fieldset']['geslacht']['#default_value'] = $contact['geslacht'];
   $form['fieldset']['geslacht']['#options'] = $gender_options;
 
   $form['fieldset']['geboortedatum']['#type'] = 'date_popup';
   $form['fieldset']['geboortedatum']['#title'] = 'Geboortedatum';
-  $form['fieldset']['geboortedatum']['#required'] = true;
+  $form['fieldset']['geboortedatum']['#required'] = false;
   $form['fieldset']['geboortedatum']['#default_value'] = $contact['geboortedatum'];
   $form['fieldset']['geboortedatum']['#date_format'] = 'd-m-Y';
   $form['fieldset']['geboortedatum']['#date_label_position'] = 'before';
@@ -102,7 +102,7 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
   $countries = CRM_Core_PseudoConstant::country();
   $form['fieldset']['land']['#type'] = 'select';
   $form['fieldset']['land']['#title'] = 'Land';
-  $form['fieldset']['land']['#required'] = true;
+  $form['fieldset']['land']['#required'] = false;
   $form['fieldset']['land']['#default_value'] = $contact['land'];
   $form['fieldset']['land']['#options'] = $countries;
 
@@ -131,7 +131,7 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
 
   $form['fieldset']['straat']['#type'] = 'textfield';
   $form['fieldset']['straat']['#title'] = 'Straat';
-  $form['fieldset']['straat']['#required'] = true;
+  $form['fieldset']['straat']['#required'] = false;
   $form['fieldset']['straat']['#default_value'] = $contact['straat'];
   $form['fieldset']['straat']['#states'] = array(
     'disabled' =>  array(
@@ -141,7 +141,7 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
 
   $form['fieldset']['woonplaats']['#type'] = 'textfield';
   $form['fieldset']['woonplaats']['#title'] = 'Woonplaats';
-  $form['fieldset']['woonplaats']['#required'] = true;
+  $form['fieldset']['woonplaats']['#required'] = false;
   $form['fieldset']['woonplaats']['#default_value'] = $contact['woonplaats'];
   $form['fieldset']['woonplaats']['#states'] = array(
     'disabled' =>  array(
@@ -151,17 +151,17 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
 
   $form['fieldset']['telefoon']['#type'] = 'textfield';
   $form['fieldset']['telefoon']['#title'] = 'Telefoon';
-  $form['fieldset']['telefoon']['#required'] = true;
+  $form['fieldset']['telefoon']['#required'] = false;
   $form['fieldset']['telefoon']['#default_value'] = $contact['telefoon'];
 
   $form['fieldset']['mobiel']['#type'] = 'textfield';
   $form['fieldset']['mobiel']['#title'] = 'Mobiel';
-  $form['fieldset']['mobiel']['#required'] = true;
+  $form['fieldset']['mobiel']['#required'] = false;
   $form['fieldset']['mobiel']['#default_value'] = $contact['mobiel'];
 
   $form['fieldset']['email']['#type'] = 'textfield';
   $form['fieldset']['email']['#title'] = 'E-mailadres';
-  $form['fieldset']['email']['#required'] = true;
+  $form['fieldset']['email']['#required'] = false;
   $form['fieldset']['email']['#default_value'] = $contact['email'];
   $form['fieldset']['email']['#element_validate'] = array('wijzigingcontactgegevens_email_validate');
 
@@ -188,9 +188,12 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
   $contactParams['middle_name'] = $form_state['values']['tussenvoegsel'];
   $contactParams['last_name'] = $form_state['values']['achternaam'];
   $contactParams['gender_id'] = $form_state['values']['geslacht'];
-  $birthDate = new DateTime($form_state['values']['geboortedatum']);
-  $contactParams['birth_date'] = $birthDate->format("Ymd");
-  $contactParams['email'] = $form_state['values']['email'];
+  $birthDate = null;
+  if (!empty($form_state['values']['geboortedatum'])) {
+    $birthDate = new DateTime($form_state['values']['geboortedatum']);
+    $birthDate = $birthDate->format('Ymd');
+  }
+  $contactParams['birth_date'] = $birthDate;
   civicrm_api3('Contact', 'create', $contactParams);
 
   $addressParams['country_id'] = $form_state['values']['land'];
@@ -203,7 +206,8 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
     $homeAddressId = civicrm_api3('Address', 'getvalue', array('contact_id' => $contact_id, 'location_type_id' => $homeLocationTypeId, 'return' => 'id'));
     $addressParams['id'] = $homeAddressId;
   } catch (Exception $e) {
-    // Do nothing
+    $addressParams['contact_id'] = $contact_id;
+    $addressParams['location_type_id'] = $homeLocationTypeId;
   }
   civicrm_api3('Address', 'create', $addressParams);
 
@@ -212,24 +216,56 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
     $telefoonId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $phoneTypeId, 'return' => 'id'));
     $phoneParams['id'] = $telefoonId;
   } catch (Exception $e) {
-    // Do nothing
+    $phoneParams['contact_id'] = $contact_id;
+    $phoneParams['phone_type_id'] = $phoneTypeId;
+    $phoneParams['location_type_id'] = $homeLocationTypeId;
   }
-  civicrm_api3('Phone', 'create', $phoneParams);
+  if (!empty($form_state['values']['telefoon'])) {
+    civicrm_api3('Phone', 'create', $phoneParams);
+  } elseif (!empty($phoneParams['id'])) {
+    civicrm_api3('Phone', 'delete', array('id' => $phoneParams['id']));
+  }
 
+  $mobileParams['contact_id'] = $contact_id;
   $mobileParams['phone'] = $form_state['values']['telefoon'];
   try {
     $mobileId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $mobileTypeId, 'return' => 'id'));
     $mobileParams['id'] = $mobileId;
   } catch (Exception $e) {
-    // Do nothing
+    $mobileParams['contact_id'] = $contact_id;
+    $mobileParams['phone_type_id'] = $mobileTypeId;
+    $mobileParams['location_type_id'] = $homeLocationTypeId;
   }
-  civicrm_api3('Phone', 'create', $mobileParams);
+  if (!empty($form_state['values']['telefoon'])) {
+    civicrm_api3('Phone', 'create', $mobileParams);
+  } elseif (!empty($mobileParams['id'])) {
+    civicrm_api3('Phone', 'delete', array('id' => $mobileParams['id']));
+  }
+
+  $emailParams['email'] = $form_state['values']['email'];
+  try {
+    $emailId = civicrm_api3('Email', 'getvalue', array('contact_id' => $contact_id, 'is_primary' => 1, 'return' => 'id'));
+    $emailParams['id'] = $emailId;
+  } catch (Exception $e) {
+    $emailParams['contact_id'] = $contact_id;
+    $emailParams['is_primary'] = 1;
+    $emailParams['location_type_id'] = $homeLocationTypeId;
+  }
+  if (!empty($form_state['values']['email'])) {
+    civicrm_api3('Email', 'create', $emailParams);
+  } elseif (!empty($emailParams['id'])) {
+    civicrm_api3('Email', 'delete', array('id' => $emailParams['id']));
+  }
 
   $newData = wijzigingcontactgegevens_get_data($contact_id);
   $wijzigingsOverzicht = wijzigingcontactgegevens_format_data($oldData, $newData);
   if (strlen($wijzigingsOverzicht)) {
     // Maak alleen wijzigings activiteit aan als er ook daadwerkelijk iets gewijzigd is.
-    $activityTypeId = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Wijziging adres door afdeling', 'option_group_id' => 'activity_type', 'return' => 'value'));
+    if ($userID != $contact_id) {
+      $activityTypeId = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Wijziging adres door afdeling', 'option_group_id' => 'activity_type', 'return' => 'value'));
+    } else {
+      $activityTypeId = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Wijziging adres via website', 'option_group_id' => 'activity_type', 'return' => 'value'));
+    }
     $activityParams['details'] = $wijzigingsOverzicht;
     $activityParams['activity_type_id'] = $activityTypeId;
     $activityParams['status_id'] = "Completed";
@@ -338,7 +374,7 @@ function wijzigingcontactgegevens_format_data($oldData, $newData) {
  */
 function wijzigingcontactgegevens_email_validate($element, &$form_state, $form) {
   $value = $element['#value'];
-  if (!valid_email_address($value)) {
+  if (!empty($element['#value']) && !valid_email_address($value)) {
     form_error($element, t('Please enter a valid email address.'));
   }
 }
