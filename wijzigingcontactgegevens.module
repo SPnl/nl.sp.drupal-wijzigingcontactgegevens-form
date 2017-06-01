@@ -15,14 +15,14 @@ function wijzigingcontactgegevens_menu()
     'page callback' => 'drupal_get_form',
     'page arguments' => array('wijzigingscontactgegevens_mijn_gegevens_form'),
     'access callback' => 'wijzigingscontactgegevens_user_has_role',
-    'access arguments' => array(array('authenticated')),
+    'access arguments' => array(array('authenticated user')),
   );
   $items['wijzigingcontactgegevens/postcodelookup'] = array(
     'title' => 'Wijziging contactgegevens - postcode lookup',
     'page callback' => 'wijzigingscontactgegevens_postcode_lookup',
     'page arguments' => array(),
     'access callback' => 'wijzigingscontactgegevens_user_has_role',
-    'access arguments' => array(array('Afdelingsgebruiker CiviCRM')),
+    'access arguments' => array(array('authenticated user')),
   );
   return $items;
 }
