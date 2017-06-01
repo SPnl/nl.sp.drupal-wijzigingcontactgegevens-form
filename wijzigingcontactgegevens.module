@@ -225,9 +225,8 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
   } elseif (!empty($phoneParams['id'])) {
     civicrm_api3('Phone', 'delete', array('id' => $phoneParams['id']));
   }
-
-  $mobileParams['contact_id'] = $contact_id;
-  $mobileParams['phone'] = $form_state['values']['telefoon'];
+  
+  $mobileParams['phone'] = $form_state['values']['mobiel'];
   try {
     $mobileId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $mobileTypeId, 'return' => 'id'));
     $mobileParams['id'] = $mobileId;
@@ -236,7 +235,7 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
     $mobileParams['phone_type_id'] = $mobileTypeId;
     $mobileParams['location_type_id'] = $homeLocationTypeId;
   }
-  if (!empty($form_state['values']['telefoon'])) {
+  if (!empty($form_state['values']['mobiel'])) {
     civicrm_api3('Phone', 'create', $mobileParams);
   } elseif (!empty($mobileParams['id'])) {
     civicrm_api3('Phone', 'delete', array('id' => $mobileParams['id']));
