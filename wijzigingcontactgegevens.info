@@ -1,0 +1,8 @@
+name = Wijzigingcontactgegevens form
+description = Form to change contact details by a local user.
+core = 7.x
+version = 1.0
+package = sprbs
+
+dependencies[] = civicrm
+dependencies[] = date_popup
