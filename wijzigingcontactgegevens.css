@@ -1,7 +1,9 @@
+#wijzigingscontactgegevens-mijn-gegevens-form .form-item-geboortedatum .date-padding,
 #wijzigingscontactgegevens-form .form-item-geboortedatum .date-padding {
     float: right;
 }
 
+#wijzigingscontactgegevens-mijn-gegevens-form .form-item label,
 #wijzigingscontactgegevens-form .form-item label {
     width: 120px;
     display: inline-block;
