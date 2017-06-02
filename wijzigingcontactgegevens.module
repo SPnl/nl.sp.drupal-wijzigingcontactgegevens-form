@@ -213,7 +213,7 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
 
   $phoneParams['phone'] = $form_state['values']['telefoon'];
   try {
-    $telefoonId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $phoneTypeId, 'return' => 'id'));
+    $telefoonId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $phoneTypeId, 'return' => 'id', 'location_type_id' => $homeLocationTypeId));
     $phoneParams['id'] = $telefoonId;
   } catch (Exception $e) {
     $phoneParams['contact_id'] = $contact_id;
@@ -225,10 +225,10 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
   } elseif (!empty($phoneParams['id'])) {
     civicrm_api3('Phone', 'delete', array('id' => $phoneParams['id']));
   }
-  
+
   $mobileParams['phone'] = $form_state['values']['mobiel'];
   try {
-    $mobileId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $mobileTypeId, 'return' => 'id'));
+    $mobileId = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $mobileTypeId, 'return' => 'id', 'location_type_id' => $homeLocationTypeId));
     $mobileParams['id'] = $mobileId;
   } catch (Exception $e) {
     $mobileParams['contact_id'] = $contact_id;
@@ -315,14 +315,14 @@ function wijzigingcontactgegevens_get_data($contact_id) {
 
   $telefoon = '';
   try {
-    $telefoon = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $phoneTypeId, 'return' => 'phone'));
+    $telefoon = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $phoneTypeId, 'return' => 'phone', 'location_type_id' => $homeLocationTypeId));
   } catch (Exception $e) {
     // Do nothing
   }
 
   $mobiel = '';
   try {
-    $mobiel = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $mobileTypeId, 'return' => 'phone'));
+    $mobiel = civicrm_api3('Phone', 'getvalue', array('contact_id' => $contact_id, 'phone_type_id' => $mobileTypeId, 'return' => 'phone', 'location_type_id' => $homeLocationTypeId));
   } catch (Exception $e) {
     // Do nothing
   }
