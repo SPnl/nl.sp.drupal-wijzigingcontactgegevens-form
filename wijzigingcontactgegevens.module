@@ -116,10 +116,10 @@ function wijzigingscontactgegevens_form($form, &$form_state, $contact_id) {
   $form['fieldset']['huisnummer']['#required'] = true;
   $form['fieldset']['huisnummer']['#default_value'] = $contact['huisnummer'];
 
-  $form['fieldset']['huisnummer toevoeging']['#type'] = 'textfield';
-  $form['fieldset']['huisnummer toevoeging']['#title'] = 'Huisnummer toevoeging';
-  $form['fieldset']['huisnummer toevoeging']['#required'] = false;
-  $form['fieldset']['huisnummer toevoeging']['#default_value'] = $contact['huisnummer toevoeging'];
+  $form['fieldset']['huisnummer_toevoeging']['#type'] = 'textfield';
+  $form['fieldset']['huisnummer_toevoeging']['#title'] = 'Huisnummer toevoeging';
+  $form['fieldset']['huisnummer_toevoeging']['#required'] = false;
+  $form['fieldset']['huisnummer_toevoeging']['#default_value'] = $contact['huisnummer toevoeging'];
 
   $form['fieldset']['postcodelookup']['#type'] = 'container';
   $form['fieldset']['postcodelookup']['#states'] = array(
@@ -199,7 +199,7 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
   $addressParams['country_id'] = $form_state['values']['land'];
   $addressParams['postal_code'] = $form_state['values']['postcode'];
   $addressParams['street_number'] = $form_state['values']['huisnummer'];
-  $addressParams['street_number_suffix'] = $form_state['values']['huisnummer toevoeging'];
+  $addressParams['street_unit'] = $form_state['values']['huisnummer_toevoeging'];
   $addressParams['street_name'] = $form_state['values']['straat'];
   $addressParams['city'] = $form_state['values']['woonplaats'];
   try {
@@ -299,7 +299,7 @@ function wijzigingcontactgegevens_get_data($contact_id) {
   $address['country_id'] = '';
   $address['postal_code'] = '';
   $address['street_number'] = '';
-  $address['street_number_suffix'] = '';
+  $address['street_unit'] = '';
   $address['street_name'] = '';
   $address['city'] = '';
   try {
@@ -339,7 +339,7 @@ function wijzigingcontactgegevens_get_data($contact_id) {
   $data['land'] = $address['country_id'];
   $data['postcode'] = $address['postal_code'];
   $data['huisnummer'] = $address['street_number'];
-  $data['huisnummer toevoeging'] = $address['street_number_suffix'];
+  $data['huisnummer toevoeging'] = $address['street_unit'];
   $data['straat'] = $address['street_name'];
   $data['woonplaats'] = $address['city'];
   $data['telefoon'] = $telefoon;
