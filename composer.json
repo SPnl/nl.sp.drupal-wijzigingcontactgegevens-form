@@ -1,0 +1,11 @@
+{
+  "name": "spnl/nl.sp.drupal-wijzigingcontactgegevens-form",
+  "description": "Form to change contact details by a local user.",
+  "type": "drupal-custom-module",
+  "authors": [
+    {
+      "name": "Jaap Jansma",
+      "email": "helpdesk@civicoop.org"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 name = Wijzigingcontactgegevens form
 description = Form to change contact details by a local user.
 core = 7.x
-version = 7.x-1.2
+version = 1.2.1
 package = sprbs
 
 dependencies[] = civicrm
