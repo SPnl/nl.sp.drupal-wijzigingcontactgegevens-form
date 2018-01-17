@@ -245,6 +245,9 @@ function wijzigingscontactgegevens_form_submit($form, &$form_state) {
   try {
     $emailId = civicrm_api3('Email', 'getvalue', array('contact_id' => $contact_id, 'is_primary' => 1, 'return' => 'id'));
     $emailParams['id'] = $emailId;
+    if (strcasecmp($oldData['email'], $form_state['values']['email']) !== 0) {
+      $emailParams['on_hold'] = 0;
+    }
   } catch (Exception $e) {
     $emailParams['contact_id'] = $contact_id;
     $emailParams['is_primary'] = 1;
