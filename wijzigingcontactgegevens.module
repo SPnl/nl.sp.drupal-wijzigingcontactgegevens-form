@@ -14,7 +14,7 @@ function wijzigingcontactgegevens_menu()
     'title' => 'Wijziging contactgegevens',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('wijzigingscontactgegevens_mijn_gegevens_form'),
-    'access callback' => 'wijzigingscontactgegevens_user_has_role',
+    'access callback' => 'wijzigingscontactgegevens_user_has_role_and_is_member',
     'access arguments' => array(array('authenticated user')),
   );
   $items['wijzigingcontactgegevens/postcodelookup'] = array(
@@ -398,6 +398,35 @@ function wijzigingscontactgegevens_user_has_role_and_access_to_contact($roles, $
   foreach ($roles as $role) {
     if (in_array($role, $user->roles)) {
       return wijzigingscontactgegevens_user_has_access_to_contact($contact_id);
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Check wether user is member.
+ */
+function wijzigingscontactgegevens_user_has_role_and_is_member($roles)
+{
+  global $user;
+  if (in_array('administrator', $user->roles)) {
+    return true;
+  }
+  foreach ($roles as $role) {
+    if (in_array($role, $user->roles)) {
+      $account = user_load($user->uid);
+      if (!empty($account->field_contact_id) && !empty($account->field_contact_id['und'][0]['value'])) {
+        $contact_id = $account->field_contact_id['und'][0]['value'];
+        try {
+          civicrm_initialize();
+          $spdata = civicrm_api3('Contact', 'getspdata', array('contact_id' => $contact_id));
+          if (!empty($spdata['values']) && !empty($spdata['values'][$contact_id]) && !empty($spdata['values'][$contact_id]['is_member'])) {
+            return TRUE;
+          }
+        } catch (Exception $e) {
+          return false;
+        }
+      }
     }
   }
   return FALSE;
